@@ -70,14 +70,14 @@ export const HackathonDemoBanner: React.FC = () => {
               </p>
             </div>
 
-            {/* Quick Demo Jump Buttons */}
+            {/* Quick Demo Jump Buttons - Step 3 is Smart Advisor */}
             <div className="flex flex-wrap items-center gap-1.5">
               <button
-                onClick={() => navigate('/advisor')}
+                onClick={() => navigate('/apply')}
                 className="bg-amber-800/90 hover:bg-amber-700 px-2.5 py-1 rounded border border-amber-400 text-[11px] font-medium flex items-center gap-1 transition"
               >
-                <Compass className="w-3 h-3 text-yellow-300" />
-                <span>1. Smart Advisor (P0)</span>
+                <FileText className="w-3 h-3 text-yellow-300" />
+                <span>1. Form Auto-Save (P1)</span>
               </button>
 
               <button
@@ -89,27 +89,11 @@ export const HackathonDemoBanner: React.FC = () => {
               </button>
 
               <button
-                onClick={() => navigate('/reissue-check')}
-                className="bg-purple-900/90 hover:bg-purple-800 px-2.5 py-1 rounded border border-purple-400 text-[11px] font-medium flex items-center gap-1 transition"
+                onClick={() => navigate('/advisor')}
+                className="bg-amber-800/90 hover:bg-amber-700 px-2.5 py-1 rounded border border-amber-400 text-[11px] font-medium flex items-center gap-1 transition shadow-xs"
               >
-                <Sparkles className="w-3 h-3 text-yellow-300" />
-                <span>Reissue AI Check (Gemini)</span>
-              </button>
-
-              <button
-                onClick={() => navigate('/apply')}
-                className="bg-amber-800/90 hover:bg-amber-700 px-2.5 py-1 rounded border border-amber-400 text-[11px] font-medium flex items-center gap-1 transition"
-              >
-                <FileText className="w-3 h-3 text-yellow-300" />
-                <span>3. Form Auto-Save (P1)</span>
-              </button>
-
-              <button
-                onClick={() => navigate('/track')}
-                className="bg-amber-800/90 hover:bg-amber-700 px-2.5 py-1 rounded border border-amber-400 text-[11px] font-medium flex items-center gap-1 transition"
-              >
-                <Search className="w-3 h-3 text-yellow-300" />
-                <span>4. Visual Tracker (P0)</span>
+                <Compass className="w-3 h-3 text-yellow-300" />
+                <span>3. Smart Advisor (P0)</span>
               </button>
 
               <button
@@ -117,7 +101,23 @@ export const HackathonDemoBanner: React.FC = () => {
                 className="bg-amber-800/90 hover:bg-amber-700 px-2.5 py-1 rounded border border-amber-400 text-[11px] font-medium flex items-center gap-1 transition"
               >
                 <CreditCard className="w-3.5 h-3.5 text-yellow-300" />
-                <span>5. Fee Payment Simulation (P1)</span>
+                <span>4. Fee Payment Simulation (P1)</span>
+              </button>
+
+              <button
+                onClick={() => navigate('/track')}
+                className="bg-amber-800/90 hover:bg-amber-700 px-2.5 py-1 rounded border border-amber-400 text-[11px] font-medium flex items-center gap-1 transition"
+              >
+                <Search className="w-3 h-3 text-yellow-300" />
+                <span>5. Visual Tracker (P0)</span>
+              </button>
+
+              <button
+                onClick={() => navigate('/reissue-check')}
+                className="bg-purple-900/90 hover:bg-purple-800 px-2.5 py-1 rounded border border-purple-400 text-[11px] font-medium flex items-center gap-1 transition"
+              >
+                <Sparkles className="w-3 h-3 text-yellow-300" />
+                <span>Reissue AI Check (Gemini)</span>
               </button>
 
               <button

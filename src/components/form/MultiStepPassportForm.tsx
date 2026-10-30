@@ -119,14 +119,13 @@ export const MultiStepPassportForm: React.FC = () => {
     }
   };
 
-  const handleFinalSubmit = () => {
+  const handleFinalSubmit = (targetRoute: '/upload' | '/payment' = '/upload') => {
     setIsSubmitting(true);
     setTimeout(() => {
       const generatedARN = submitApplication();
       setIsSubmitting(false);
       setShowReviewModal(false);
-      // Navigate to Payment step as per main demo scenario (Section 8)
-      navigate('/payment');
+      navigate(targetRoute);
     }, 800);
   };
 
@@ -142,7 +141,7 @@ export const MultiStepPassportForm: React.FC = () => {
             <div className="flex items-center gap-2 mb-1.5">
               <span className="bg-amber-400 text-slate-900 text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-wider flex items-center gap-1 shadow-xs">
                 <Sparkles className="w-3 h-3" />
-                Module 3 (P1) – Smart Application Form
+                Step 1: Application Form (Auto-Save & Resilient Draft)
               </span>
               <span className="text-xs text-blue-200">Preserving Original Structure + Form Sanity</span>
             </div>
@@ -973,24 +972,34 @@ export const MultiStepPassportForm: React.FC = () => {
                 Back to Edit
               </button>
 
-              <button
-                type="button"
-                onClick={handleFinalSubmit}
-                disabled={isSubmitting}
-                className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-6 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Submitting Application & Generating ARN...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Confirm & Proceed to Payment</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleFinalSubmit('/payment')}
+                  disabled={isSubmitting}
+                  className="bg-slate-700 hover:bg-slate-800 text-white font-bold px-3 py-2 rounded-lg text-xs transition"
+                >
+                  Proceed to Payment
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleFinalSubmit('/upload')}
+                  disabled={isSubmitting}
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-5 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Submitting Application & Generating ARN...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Confirm & Proceed to Step 2: Document Upload</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>

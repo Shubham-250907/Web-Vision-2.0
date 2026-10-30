@@ -115,7 +115,7 @@ export const CentralServices: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {/* Fresh Passport */}
           <Link
-            to="/advisor"
+            to="/apply"
             className="p-3.5 rounded-lg border-2 border-blue-200 bg-blue-50/50 hover:bg-blue-50 hover:border-blue-500 transition group flex items-start gap-3"
           >
             <div className="w-9 h-9 rounded bg-blue-700 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -127,11 +127,11 @@ export const CentralServices: React.FC = () => {
                   Fresh Passport Application
                 </h4>
                 <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.2 rounded border border-emerald-300">
-                  Smart Workflow
+                  Step 1: Auto-Save Form
                 </span>
               </div>
               <p className="text-[11px] text-slate-600 mt-1 leading-snug">
-                For first-time applicants. Personalized document advisor and instant upload check.
+                Fill Form No. 1 with real-time field validation, Non-ECR guidance, and automatic draft save.
               </p>
             </div>
           </Link>

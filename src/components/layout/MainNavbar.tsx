@@ -10,9 +10,9 @@ export const MainNavbar: React.FC = () => {
   const navLinks = [
     { to: '/', label: language === 'hi' ? 'मुख्य पृष्ठ' : 'Home' },
     {
-      to: '/advisor',
-      label: language === 'hi' ? 'दस्तावेज़ सलाहकार' : 'Document Advisor',
-      badge: 'Smart P0'
+      to: '/apply',
+      label: language === 'hi' ? 'ऑनलाइन आवेदन' : 'Apply Online',
+      badge: 'Auto-Save'
     },
     {
       to: '/upload',
@@ -20,24 +20,24 @@ export const MainNavbar: React.FC = () => {
       badge: 'Gemini AI'
     },
     {
+      to: '/advisor',
+      label: language === 'hi' ? 'दस्तावेज़ सलाहकार' : 'Document Advisor',
+      badge: 'Smart P0'
+    },
+    {
       to: '/reissue-check',
       label: language === 'hi' ? 'पुनर्निर्गम तुलना' : 'Reissue AI Check',
       badge: 'Gemini AI'
     },
     {
-      to: '/apply',
-      label: language === 'hi' ? 'ऑनलाइन आवेदन' : 'Apply Online',
-      badge: 'Auto-Save'
+      to: '/payment',
+      label: language === 'hi' ? 'शुल्क भुगतान' : 'Fee Payment',
+      badge: 'Simulated P1'
     },
     {
       to: '/track',
       label: language === 'hi' ? 'आवेदन स्थिति' : 'Track Application',
       badge: 'Timeline P0'
-    },
-    {
-      to: '/payment',
-      label: language === 'hi' ? 'शुल्क भुगतान' : 'Fee Payment',
-      badge: 'Simulated P1'
     },
     {
       to: '/appointment',

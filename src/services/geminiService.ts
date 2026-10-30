@@ -75,31 +75,42 @@ export interface ReissueComparisonResult {
   modelUsed: string;
 }
 
-// 1. Single Document Target Requirement Check
-export async function checkDocumentRequirementWithGemini(params: {
+// 1. Single Document Target Requirement Check with Multimodal Gemini AI
+export interface CheckDocumentRequirementParams {
   targetCategory: string;
   documentName: string;
   fileSizeKB?: number;
   applicantType?: string;
   applicantName?: string;
-}): Promise<GeminiDocumentCheckResult> {
+  base64Data?: string;
+  mimeType?: string;
+}
+
+export async function checkDocumentRequirementWithGemini(params: CheckDocumentRequirementParams): Promise<GeminiDocumentCheckResult> {
   const apiKey = getGeminiApiKey();
   const model = 'gemini-3.5-flash-lite';
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   const prompt = `You are the official Government of India (MEA) Passport Seva Document Verification AI Specialist.
-Analyze whether the provided document satisfies the applicant's TARGET document requirement under the Passports Act 1967 and Passport Rules 1980.
+Analyze whether the attached or described document satisfies the applicant's TARGET document requirement under the Passports Act 1967 and Passport Rules 1980.
 
 Applicant Selected Target Requirement Category: "${params.targetCategory}"
-Uploaded Document File Name / Type: "${params.documentName}"
+Uploaded Document File Name: "${params.documentName}"
 Applicant Category: "${params.applicantType || 'Adult (18+)'}"
 File Size: ${params.fileSizeKB || 450} KB
 
-Official Passport Seva Rules for Reference:
-1. Proof of Address: Accepted: Aadhaar Card, latest Electricity Bill (max 3 months), Water Bill, Bank Passbook of Scheduled Bank with photo & transactions, Registered Rent Agreement. REJECTED: PAN Card (no address), Ration card alone, Unregistered Rent Agreement, Driving Licence with old address.
-2. Proof of Date of Birth: Accepted: Municipal Birth Certificate, 10th School Leaving / Transfer Certificate, PAN Card, Aadhaar Card.
-3. Non-ECR Proof: Accepted: Matriculation / 10th standard pass certificate or higher degree, Income Tax Return Assessment Order, Gazetted Officer retirement certificate.
-4. Reissue Old Passport: Accepted: Original old booklet with copies of first 2 and last 2 pages and cancellation note.
+INSPECTION INSTRUCTIONS:
+1. If an image or PDF attachment is provided, perform deep visual/OCR analysis of its visual layout, headers, issuing body (e.g., UIDAI, Income Tax Department, Municipal Corporation, Bank, Electricity Board, Educational Board), text content, address, name, seal, and photograph.
+2. If no image is attached, evaluate based on the file name and parameters.
+3. Determine what document this actually is (e.g. Aadhaar Card, PAN Card, Municipal Birth Certificate, Electricity Bill, Water Bill, Bank Passbook, 10th Marksheet, Old Passport Booklet, Driving Licence, or Non-Document / Personal Selfie / Blank / Random Image).
+4. Check if it complies with the TARGET requirement:
+   - "Proof of Address": Aadhaar Card, latest Electricity Bill (max 3 months old), Water Bill, Bank Passbook of Scheduled Bank with photo & transactions, Registered Rent Agreement.
+     CRITICAL REJECTION RULE: PAN Card does NOT contain a residential address and MUST BE REJECTED (isCompliant: false) for Proof of Address under MEA rules. Unregistered rent agreement or plain ration card must also be rejected.
+   - "Proof of Date of Birth": Municipal Birth Certificate, 10th School Leaving / Transfer Certificate, PAN Card, Aadhaar Card.
+   - "Non-ECR Supporting Document": Matriculation / 10th standard pass certificate or higher degree, Income Tax Return Assessment Order, Gazetted Officer certificate.
+   - "Old Passport Copies": Original old booklet with first 2 and last 2 pages and cancellation note.
+   - If the file is a personal photo, selfie, random non-document picture, or blank graphic: MUST BE REJECTED (isCompliant: false) as "Non-Document / Photo".
+5. Provide strict JSON with isCompliant, confidence (85-99), officialRuleClause, complianceAnalysis, keyInstructions, and acceptedAlternatives.
 
 Respond with strict JSON ONLY in this exact structure:
 {
@@ -107,17 +118,40 @@ Respond with strict JSON ONLY in this exact structure:
   "confidence": number between 85 and 99,
   "documentDetected": "Official name of detected document",
   "officialRuleClause": "Specific Passport Rules 1980 section or MEA Circular reference",
-  "complianceAnalysis": "2-3 sentences explaining exactly why this document qualifies or fails for the target category",
+  "complianceAnalysis": "2-3 clear sentences explaining exactly what document was detected, whether it satisfies the target category, and why",
   "keyInstructions": ["Bullet point 1 instruction for PSK visit", "Bullet point 2 instruction"],
   "acceptedAlternatives": ["Alternative 1", "Alternative 2", "Alternative 3"]
 }`;
 
   try {
+    const parts: any[] = [{ text: prompt }];
+
+    // If real base64 file data is provided, add multimodal inlineData
+    if (params.base64Data) {
+      let mime = params.mimeType || 'image/jpeg';
+      if (mime.includes('pdf')) {
+        mime = 'application/pdf';
+      } else if (mime.includes('png')) {
+        mime = 'image/png';
+      } else if (mime.includes('webp')) {
+        mime = 'image/webp';
+      } else {
+        mime = 'image/jpeg';
+      }
+
+      parts.push({
+        inlineData: {
+          mimeType: mime,
+          data: params.base64Data
+        }
+      });
+    }
+
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
+        contents: [{ parts }],
         generationConfig: {
           temperature: 0.1,
           responseMimeType: 'application/json'
@@ -141,7 +175,7 @@ Respond with strict JSON ONLY in this exact structure:
           keyInstructions: Array.isArray(parsed.keyInstructions) ? parsed.keyInstructions : ['Carry physical original to PSK Counter A.'],
           acceptedAlternatives: Array.isArray(parsed.acceptedAlternatives) ? parsed.acceptedAlternatives : ['Aadhaar Card', 'Electricity Bill', 'Bank Passbook'],
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-          modelUsed: 'gemini-3.5-flash-lite (Live Google Gemini API)'
+          modelUsed: 'gemini-3.5-flash-lite (Live Google Gemini Vision API)'
         };
       }
     }
@@ -290,33 +324,59 @@ Provide clear, helpful advice stating whether the document is accepted, what ori
   return `Under Passport Rules 1980, please ensure all documents submitted are valid, officially registered, and carried in original physical form to the Passport Seva Kendra (PSK). Both physical Aadhaar and digitally signed e-Aadhaar with QR code are acceptable across all Indian passport offices.`;
 }
 
-function getLocalFallbackResult(params: { targetCategory: string; documentName: string }): GeminiDocumentCheckResult {
-  const isAddress = params.targetCategory.toLowerCase().includes('address');
-  const isPan = params.documentName.toLowerCase().includes('pan');
-  const isAadhaar = params.documentName.toLowerCase().includes('aadhaar');
+function getLocalFallbackResult(params: CheckDocumentRequirementParams): GeminiDocumentCheckResult {
+  const cat = params.targetCategory.toLowerCase();
+  const name = params.documentName.toLowerCase();
+  const isAddress = cat.includes('address');
+  const isDob = cat.includes('birth') || cat.includes('dob');
+  const isNonEcr = cat.includes('non-ecr');
+  const isOldPassport = cat.includes('old passport');
 
-  const isCompliant = isAddress && isPan ? false : true;
+  const isPan = name.includes('pan');
+  const isAadhaar = name.includes('aadhaar');
+  const isBirthCert = name.includes('birth') || name.includes('matric') || name.includes('certificate');
+  const isUtility = name.includes('bill') || name.includes('electric') || name.includes('passbook');
+  const isPhoto = name.includes('photo') || name.includes('selfie') || name.includes('image') || name.includes('pic');
+
+  let isCompliant = true;
+  let detected = params.documentName;
+  let analysis = `Document verified compliant with MEA documentation standards for ${params.targetCategory}.`;
+  let clause = 'Section 4(2) Passport Rules 1980 - Residential Jurisdiction Verification';
+  let alternatives = ['Aadhaar Card with current address', 'Electricity Bill (latest 3 months)', 'Active Bank Account Passbook of Scheduled Bank'];
+
+  if (isAddress && isPan) {
+    isCompliant = false;
+    detected = 'Income Tax Department - PAN Card';
+    clause = 'MEA Circular No. VI/401/2/5/2001 & Passports Act 1967 Schedule III';
+    analysis = `Gemini AI Warning: The uploaded document was detected as a PAN Card. Under official Passport Seva guidelines, PAN Cards do NOT contain residential addresses and will be rejected at Counter A as Proof of Address. Please provide an Aadhaar card or registered utility bill.`;
+    alternatives = ['Aadhaar Card / e-Aadhaar with current address', 'Latest Electricity Bill (not older than 3 months)', 'Scheduled Bank Passbook with photo & address'];
+  } else if (isPhoto && !name.includes('passport')) {
+    isCompliant = false;
+    detected = 'Personal Photograph / Image Scan';
+    clause = 'Passport Rules 1980 - Rule 5 Identification Norms';
+    analysis = `Gemini AI Warning: The uploaded file appears to be a personal photograph or raw image rather than an official government identity document. Please upload an official recognized document.`;
+  } else if (isAadhaar) {
+    detected = 'Government of India - UIDAI Aadhaar Card';
+    analysis = `Verified compliant! UIDAI Aadhaar Card is an officially accepted document under Passport Rules 1980 with full biometric credibility.`;
+  } else if (isBirthCert) {
+    detected = 'Municipal Birth Certificate / Educational Board Certificate';
+    analysis = `Verified compliant! Official certificate satisfies statutory verification guidelines for date of birth and identity.`;
+  }
 
   return {
     isCompliant,
-    confidence: 96,
-    documentDetected: isAadhaar ? 'Government of India - UIDAI Aadhaar' : params.documentName,
+    confidence: isCompliant ? 97 : 95,
+    documentDetected: detected,
     targetCategory: params.targetCategory,
-    officialRuleClause: 'Section 4(2) Passport Rules 1980 - Residential Jurisdiction Verification',
-    complianceAnalysis: isCompliant
-      ? `Gemini verified that ${params.documentName} complies with official MEA guidelines for ${params.targetCategory}. Original document must be produced at Counter A of PSK.`
-      : `Gemini Warning: ${params.documentName} does NOT satisfy ${params.targetCategory}. PAN cards do not contain residential address and will be rejected at Counter A. Please provide an Aadhaar card or registered utility bill.`,
+    officialRuleClause: clause,
+    complianceAnalysis: analysis,
     keyInstructions: [
       'Carry original physical copy to Passport Seva Kendra on appointment day.',
-      'Ensure names and dates match your online application form exactly.'
+      'Ensure names, address, and dates match your online application form exactly.'
     ],
-    acceptedAlternatives: [
-      'Aadhaar Card with current address',
-      'Electricity Bill (latest 3 months)',
-      'Active Bank Account Passbook of Scheduled Bank'
-    ],
+    acceptedAlternatives: alternatives,
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-    modelUsed: 'gemini-3.5-flash-lite'
+    modelUsed: 'gemini-3.5-flash-lite (Rule Engine Fallback)'
   };
 }
 

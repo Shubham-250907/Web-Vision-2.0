@@ -66,7 +66,7 @@ export const SmartDocumentAdvisor: React.FC = () => {
             <div className="flex items-center gap-2 mb-1.5">
               <span className="bg-amber-400 text-slate-900 text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-wider flex items-center gap-1 shadow-xs">
                 <Sparkles className="w-3 h-3" />
-                Module 1 (P0) – Smart Document Advisor
+                Step 3: Smart Document Advisor (P0)
               </span>
               <span className="text-xs text-blue-200">Rule-based Personalized Eligibility</span>
             </div>
@@ -105,7 +105,7 @@ export const SmartDocumentAdvisor: React.FC = () => {
           <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-4">
             <div className="flex items-center gap-2 border-b border-slate-200 pb-2.5 mb-3.5 text-slate-900 font-bold text-xs uppercase tracking-wide">
               <Filter className="w-4 h-4 text-blue-700" />
-              <span>Step 1: Your Application Circumstances</span>
+              <span>Part 1: Your Application Circumstances</span>
             </div>
 
             <div className="space-y-4 text-xs">
@@ -389,7 +389,7 @@ export const SmartDocumentAdvisor: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3 mb-4">
               <div>
                 <h3 className="font-bold text-sm text-slate-900 font-serif flex items-center gap-2">
-                  <span>Step 2: Dynamic Document Checklist</span>
+                  <span>Part 2: Dynamic Document Checklist</span>
                   <span className="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded">
                     {requiredDocuments.length} Documents Applicable
                   </span>
@@ -543,20 +543,22 @@ export const SmartDocumentAdvisor: React.FC = () => {
 
             {/* Bottom Navigation CTA */}
             <div className="mt-6 pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="text-xs text-slate-600">
-                <span>Finished reviewing checklist? Proceed to upload and test documents with Gemini AI verification.</span>
-              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/upload')}
+                className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs py-2 px-3.5 rounded-lg transition"
+              >
+                ← Back to Step 2: Document Upload
+              </button>
 
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => navigate('/upload')}
-                  className="bg-[#093b74] hover:bg-[#07305e] text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2 group"
-                >
-                  <span>Proceed to Smart Document Upload (P0)</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/payment')}
+                className="bg-[#093b74] hover:bg-[#07305e] text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2 group"
+              >
+                <span>Proceed to Step 4: Fee Payment Simulation (P1)</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
             </div>
           </div>
         </div>

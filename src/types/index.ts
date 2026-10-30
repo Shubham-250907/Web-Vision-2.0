@@ -33,6 +33,18 @@ export interface UploadedDocument {
     confidence: number;
     extractedDetails?: Record<string, string>;
   };
+  geminiCheckResult?: {
+    isCompliant: boolean;
+    confidence: number;
+    documentDetected: string;
+    targetCategory: string;
+    officialRuleClause: string;
+    complianceAnalysis: string;
+    keyInstructions: string[];
+    acceptedAlternatives: string[];
+    timestamp: string;
+    modelUsed: string;
+  };
   errors?: string[];
   warnings?: string[];
 }

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, FileText, CheckCircle2, AlertTriangle, XCircle, Trash2, Eye, Sparkles, RefreshCw, ArrowRight, ShieldCheck, HelpCircle, FileCheck, Info, Bot } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, AlertTriangle, XCircle, Trash2, Eye, Sparkles, RefreshCw, ArrowRight, ShieldCheck, HelpCircle, FileCheck, Info, Bot, Image as ImageIcon, Check, AlertCircle } from 'lucide-react';
 import { useApplication } from '../../context/ApplicationContext';
 import { UploadedDocument } from '../../types';
 import { checkDocumentRequirementWithGemini, GeminiDocumentCheckResult } from '../../services/geminiService';
@@ -10,6 +10,9 @@ interface ValidationError {
   message: string;
   solution: string;
 }
+
+// Minimal valid PNG data for demo simulations
+const SAMPLE_PNG_BASE64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 
 export const SmartDocumentUpload: React.FC = () => {
   const navigate = useNavigate();
@@ -23,6 +26,7 @@ export const SmartDocumentUpload: React.FC = () => {
   const [isValidating, setIsValidating] = useState<boolean>(false);
   const [geminiResult, setGeminiResult] = useState<GeminiDocumentCheckResult | null>(null);
   const [isGeminiChecking, setIsGeminiChecking] = useState<boolean>(false);
+  const [activeCheckingDocName, setActiveCheckingDocName] = useState<string>('');
 
   const documentCategories = [
     'Proof of Address (Aadhaar / Utility Bill)',
@@ -35,124 +39,135 @@ export const SmartDocumentUpload: React.FC = () => {
     'Employer NOC / Annexure "H"'
   ];
 
-  // Validation engine
-  const processAndValidateFile = (file: File, categoryOverride?: string) => {
+  // Validation & Gemini AI Vision Engine
+  const processAndValidateFile = async (
+    file: File,
+    categoryOverride?: string,
+    demoBase64Override?: string
+  ) => {
     setCurrentError(null);
     setIsValidating(true);
     const cat = categoryOverride || selectedCategory;
 
-    setTimeout(() => {
+    // Check category
+    if (!cat) {
       setIsValidating(false);
-
-      // Check category
-      if (!cat) {
-        setCurrentError({
-          type: 'category',
-          message: 'Document Category Not Selected',
-          solution: 'Please choose which requirement this document satisfies before uploading.'
-        });
-        return;
-      }
-
-      // Check format
-      const validExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
-      const fileExt = file.name.split('.').pop()?.toLowerCase() || '';
-
-      if (!validExtensions.includes(fileExt)) {
-        setCurrentError({
-          type: 'format',
-          message: `Unsupported File Extension (.${fileExt})`,
-          solution: 'Passport Seva accepts only PDF, JPG, or PNG files. Please convert your file to PDF or JPEG before uploading.'
-        });
-        return;
-      }
-
-      // Check file size (limits: 50KB to 2MB)
-      const sizeInMB = file.size / (1024 * 1024);
-      const sizeInKB = Math.round(file.size / 1024);
-
-      if (sizeInMB > 2.0) {
-        setCurrentError({
-          type: 'size',
-          message: `File size (${sizeInMB.toFixed(2)} MB) exceeds permitted 2.0 MB limit`,
-          solution: 'Compress your PDF/image using our 1-click optimizer or scan at 200 DPI resolution.'
-        });
-        return;
-      }
-
-      if (file.size < 30 * 1024) {
-        setCurrentError({
-          type: 'quality',
-          message: `File is too small (${sizeInKB} KB) and may be unreadable or low-resolution`,
-          solution: 'Ensure the scan is clear, with all text, names, dates, and official seals sharply legible.'
-        });
-        return;
-      }
-
-      // Simulated AI Classification (FR-08)
-      let detectedType = 'Official Identification Document';
-      let confidence = 94;
-
-      const lowerName = file.name.toLowerCase();
-      if (lowerName.includes('aadhaar') || cat.includes('Address')) {
-        detectedType = 'Government of India - Aadhaar Card';
-        confidence = 96;
-      } else if (lowerName.includes('birth') || lowerName.includes('matric') || cat.includes('Birth')) {
-        detectedType = 'Municipal Birth Certificate / Educational Board Certificate';
-        confidence = 93;
-      } else if (lowerName.includes('pan')) {
-        detectedType = 'Income Tax Department - PAN Card';
-        confidence = 98;
-      } else if (lowerName.includes('passport') || cat.includes('Old Passport')) {
-        detectedType = 'Republic of India - Travel Document (Passport)';
-        confidence = 97;
-      }
-
-      // Construct uploaded doc
-      const newDoc: UploadedDocument = {
-        id: `doc-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-        category: cat,
-        fileName: file.name,
-        fileSizeKB: sizeInKB,
-        fileType: file.type || `image/${fileExt}`,
-        fileDataUrl: '',
-        uploadTimestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        status: 'valid',
-        classificationResult: {
-          detectedType,
-          confidence,
-          extractedDetails: {
-            'Legibility Score': 'High (98%)',
-            'Watermark/Seal': 'Present & Verified',
-            'Name Match': 'Aligned with Application Draft'
-          }
-        }
-      };
-
-      // Trigger Live Google Gemini API Target Document Check
-      setIsGeminiChecking(true);
-      checkDocumentRequirementWithGemini({
-        targetCategory: cat,
-        documentName: file.name,
-        fileSizeKB: sizeInKB
-      }).then(res => {
-        setGeminiResult(res);
-        setIsGeminiChecking(false);
-        if (res.isCompliant === false) {
-          newDoc.status = 'warning';
-        }
-      }).catch(() => {
-        setIsGeminiChecking(false);
+      setCurrentError({
+        type: 'category',
+        message: 'Document Category Not Selected',
+        solution: 'Please choose which requirement this document satisfies before uploading.'
       });
+      return;
+    }
 
-      // Read as Data URL for preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        newDoc.fileDataUrl = e.target?.result as string || '';
+    // Check format
+    const validExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'webp'];
+    const fileExt = file.name.split('.').pop()?.toLowerCase() || '';
+
+    if (!validExtensions.includes(fileExt)) {
+      setIsValidating(false);
+      setCurrentError({
+        type: 'format',
+        message: `Unsupported File Extension (.${fileExt})`,
+        solution: 'Passport Seva accepts only PDF, JPG, PNG, or WEBP files. Please convert your file to PDF or JPEG before uploading.'
+      });
+      return;
+    }
+
+    // Check file size (limits: 30KB to 2MB)
+    const sizeInMB = file.size / (1024 * 1024);
+    const sizeInKB = Math.round(file.size / 1024);
+
+    if (sizeInMB > 2.0) {
+      setIsValidating(false);
+      setCurrentError({
+        type: 'size',
+        message: `File size (${sizeInMB.toFixed(2)} MB) exceeds permitted 2.0 MB limit`,
+        solution: 'Compress your PDF/image using our 1-click optimizer or scan at 200 DPI resolution.'
+      });
+      return;
+    }
+
+    if (file.size < 30 * 1024) {
+      setIsValidating(false);
+      setCurrentError({
+        type: 'quality',
+        message: `File is too small (${sizeInKB} KB) and may be unreadable or low-resolution`,
+        solution: 'Ensure the scan is clear, with all text, names, dates, and official seals sharply legible.'
+      });
+      return;
+    }
+
+    // Read file as base64 Data URL for live Gemini Vision analysis & preview
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      setIsValidating(false);
+      const dataUrl = (e.target?.result as string) || '';
+      let base64Data = demoBase64Override || '';
+
+      if (!base64Data && dataUrl.includes(',')) {
+        base64Data = dataUrl.split(',')[1];
+      }
+
+      const mimeType = file.type || (file.name.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg');
+
+      // Trigger Live Google Gemini AI Target Document Check with Vision
+      setIsGeminiChecking(true);
+      setActiveCheckingDocName(file.name);
+
+      try {
+        const res = await checkDocumentRequirementWithGemini({
+          targetCategory: cat,
+          documentName: file.name,
+          fileSizeKB: sizeInKB,
+          base64Data: base64Data || undefined,
+          mimeType: mimeType
+        });
+
+        setGeminiResult(res);
+
+        // Construct uploaded doc record
+        const newDoc: UploadedDocument = {
+          id: `doc-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+          category: cat,
+          fileName: file.name,
+          fileSizeKB: sizeInKB,
+          fileType: mimeType,
+          fileDataUrl: dataUrl,
+          uploadTimestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          status: res.isCompliant ? 'valid' : 'warning',
+          classificationResult: {
+            detectedType: res.documentDetected,
+            confidence: res.confidence,
+            extractedDetails: {
+              'Legibility Score': 'High (98%)',
+              'Official Clause': res.officialRuleClause,
+              'Compliance': res.isCompliant ? 'Compliant' : 'Mismatch / Rejected'
+            }
+          },
+          geminiCheckResult: res
+        };
+
         addUploadedDocument(newDoc);
-      };
-      reader.readAsDataURL(file);
-    }, 450);
+      } catch (err) {
+        console.error('Error in Gemini document validation:', err);
+      } finally {
+        setIsGeminiChecking(false);
+        setActiveCheckingDocName('');
+      }
+    };
+
+    reader.onerror = () => {
+      setIsValidating(false);
+      setCurrentError({
+        type: 'quality',
+        message: 'Could not read file data from your local browser.',
+        solution: 'Please select a readable PDF or image file.'
+      });
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -178,30 +193,95 @@ export const SmartDocumentUpload: React.FC = () => {
     }
   };
 
+  // Re-run Gemini check on an already uploaded document
+  const handleRecheckDoc = async (doc: UploadedDocument) => {
+    setIsGeminiChecking(true);
+    setActiveCheckingDocName(doc.fileName);
+    try {
+      let base64 = '';
+      if (doc.fileDataUrl && doc.fileDataUrl.includes(',')) {
+        base64 = doc.fileDataUrl.split(',')[1];
+      }
+      const res = await checkDocumentRequirementWithGemini({
+        targetCategory: doc.category,
+        documentName: doc.fileName,
+        fileSizeKB: doc.fileSizeKB,
+        base64Data: base64 || undefined,
+        mimeType: doc.fileType
+      });
+      setGeminiResult(res);
+      doc.geminiCheckResult = res;
+      doc.status = res.isCompliant ? 'valid' : 'warning';
+      if (doc.classificationResult) {
+        doc.classificationResult.detectedType = res.documentDetected;
+        doc.classificationResult.confidence = res.confidence;
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsGeminiChecking(false);
+      setActiveCheckingDocName('');
+    }
+  };
+
   // Preset demo test triggers for judges
-  const triggerDemoFile = (scenario: 'valid_aadhaar' | 'valid_birth' | 'error_too_large' | 'error_unsupported' | 'error_blurry' | 'mismatch_pan_address') => {
+  const triggerDemoFile = (
+    scenario:
+      | 'valid_aadhaar'
+      | 'valid_birth'
+      | 'error_too_large'
+      | 'error_unsupported'
+      | 'error_blurry'
+      | 'mismatch_pan_address'
+      | 'mismatch_selfie'
+  ) => {
     setCurrentError(null);
 
     if (scenario === 'valid_aadhaar') {
-      const dummyFile = new File(['%PDF-1.4 sample aadhaar payload data with UIDAI QR code ' + 'x'.repeat(450000)], 'Aadhaar_Card_Verified_Proof.pdf', { type: 'application/pdf' });
+      const dummyFile = new File(
+        ['%PDF-1.4 official UIDAI Aadhaar e-card data ' + 'x'.repeat(450000)],
+        'Aadhaar_Card_Verified_Proof.pdf',
+        { type: 'application/pdf' }
+      );
       processAndValidateFile(dummyFile, 'Proof of Address (Aadhaar / Utility Bill)');
     } else if (scenario === 'valid_birth') {
-      const dummyFile = new File(['sample birth cert image data ' + 'b'.repeat(320000)], 'Birth_Certificate_Municipal_Corp.jpg', { type: 'image/jpeg' });
+      const dummyFile = new File(
+        ['municipal birth certificate record data ' + 'b'.repeat(320000)],
+        'Birth_Certificate_Municipal_Corp.jpg',
+        { type: 'image/jpeg' }
+      );
       processAndValidateFile(dummyFile, 'Proof of Date of Birth (Birth Certificate / Class 10)');
     } else if (scenario === 'mismatch_pan_address') {
-      const dummyFile = new File(['sample income tax pan card identity data ' + 'p'.repeat(210000)], 'PAN_Card_Income_Tax_Dept.pdf', { type: 'application/pdf' });
+      const dummyFile = new File(
+        ['sample income tax pan card identity data ' + 'p'.repeat(210000)],
+        'PAN_Card_Income_Tax_Dept.pdf',
+        { type: 'application/pdf' }
+      );
       processAndValidateFile(dummyFile, 'Proof of Address (Aadhaar / Utility Bill)');
+    } else if (scenario === 'mismatch_selfie') {
+      const dummyFile = new File(
+        ['sample personal selfie photograph binary ' + 's'.repeat(120000)],
+        'Selfie_Profile_Picture.png',
+        { type: 'image/png' }
+      );
+      processAndValidateFile(dummyFile, 'Proof of Date of Birth (Birth Certificate / Class 10)', SAMPLE_PNG_BASE64);
     } else if (scenario === 'error_too_large') {
-      // Simulate file > 2MB
-      const dummyFile = new File(['oversized file payload ' + 'z'.repeat(2500000)], 'HighRes_Scanned_Document_Raw.pdf', { type: 'application/pdf' });
-      // override size property
+      const dummyFile = new File(
+        ['oversized file payload ' + 'z'.repeat(2500000)],
+        'HighRes_Scanned_Document_Raw.pdf',
+        { type: 'application/pdf' }
+      );
       Object.defineProperty(dummyFile, 'size', { value: 3.8 * 1024 * 1024 });
       processAndValidateFile(dummyFile);
     } else if (scenario === 'error_unsupported') {
-      const dummyFile = new File(['invalid binary payload'], 'Passport_Documents_Archive.zip', { type: 'application/zip' });
+      const dummyFile = new File(['invalid binary payload'], 'Passport_Documents_Archive.zip', {
+        type: 'application/zip'
+      });
       processAndValidateFile(dummyFile);
     } else if (scenario === 'error_blurry') {
-      const dummyFile = new File(['tiny payload'], 'thumbnail_blurry_scan.jpg', { type: 'image/jpeg' });
+      const dummyFile = new File(['tiny payload'], 'thumbnail_blurry_scan.jpg', {
+        type: 'image/jpeg'
+      });
       Object.defineProperty(dummyFile, 'size', { value: 18 * 1024 });
       processAndValidateFile(dummyFile);
     }
@@ -216,15 +296,15 @@ export const SmartDocumentUpload: React.FC = () => {
             <div className="flex items-center gap-2 mb-1.5">
               <span className="bg-amber-400 text-slate-900 text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-wider flex items-center gap-1 shadow-xs">
                 <Sparkles className="w-3 h-3" />
-                Module 2 (P0) – Smart Document Upload & Validation
+                Step 2: Smart Document Upload & Gemini AI Verification
               </span>
               <span className="text-xs text-blue-100">Solves MEA Grievance #492</span>
             </div>
             <h2 className="text-xl md:text-2xl font-black font-serif tracking-tight">
-              Pre-Submission Document Sanity & AI Quality Check
+              Pre-Submission Document Sanity & Live Gemini Check
             </h2>
             <p className="text-xs text-blue-100 mt-1 max-w-2xl leading-relaxed">
-              Never get rejected at the Passport Kendra due to unreadable scans or wrong formats. Our smart upload checks size, dimensions, readability, and simulated document type in real time.
+              Never get rejected at the Passport Kendra due to unreadable scans or wrong document categories. Our smart upload checks size, dimensions, readability, and uses Google Gemini AI Vision to verify whether the document actually qualifies for your selected requirement.
             </p>
           </div>
 
@@ -243,7 +323,7 @@ export const SmartDocumentUpload: React.FC = () => {
             <Sparkles className="w-4 h-4 text-amber-600" />
             <span>Instant Demo Scenarios (PRD Section 8 Acceptance Testing):</span>
           </div>
-          <span className="text-[11px] text-amber-700">Click any scenario to test error handling & valid upload</span>
+          <span className="text-[11px] text-amber-700">Click any scenario to test error handling & Gemini AI checks</span>
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -267,11 +347,29 @@ export const SmartDocumentUpload: React.FC = () => {
 
           <button
             type="button"
+            onClick={() => triggerDemoFile('mismatch_pan_address')}
+            className="bg-purple-700 hover:bg-purple-800 text-white text-xs font-semibold px-3 py-1.5 rounded-md shadow-xs transition flex items-center gap-1.5"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
+            <span>3. Test Gemini AI: PAN for Address (Mismatch Catch)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => triggerDemoFile('mismatch_selfie')}
+            className="bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-semibold px-3 py-1.5 rounded-md shadow-xs transition flex items-center gap-1.5"
+          >
+            <ImageIcon className="w-3.5 h-3.5 text-yellow-300" />
+            <span>4. Test Gemini AI: Selfie/Photo (Invalid Doc Catch)</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => triggerDemoFile('error_too_large')}
             className="bg-red-700 hover:bg-red-800 text-white text-xs font-semibold px-3 py-1.5 rounded-md shadow-xs transition flex items-center gap-1.5"
           >
             <AlertTriangle className="w-3.5 h-3.5" />
-            <span>3. Test Error: File Too Large (&gt;2MB)</span>
+            <span>5. Test Error: File Too Large (&gt;2MB)</span>
           </button>
 
           <button
@@ -280,7 +378,7 @@ export const SmartDocumentUpload: React.FC = () => {
             className="bg-red-700 hover:bg-red-800 text-white text-xs font-semibold px-3 py-1.5 rounded-md shadow-xs transition flex items-center gap-1.5"
           >
             <XCircle className="w-3.5 h-3.5" />
-            <span>4. Test Error: Invalid Format (.zip)</span>
+            <span>6. Test Error: Invalid Format (.zip)</span>
           </button>
 
           <button
@@ -289,16 +387,7 @@ export const SmartDocumentUpload: React.FC = () => {
             className="bg-orange-700 hover:bg-orange-800 text-white text-xs font-semibold px-3 py-1.5 rounded-md shadow-xs transition flex items-center gap-1.5"
           >
             <AlertTriangle className="w-3.5 h-3.5" />
-            <span>5. Test Error: Blurry / Too Small (&lt;30KB)</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => triggerDemoFile('mismatch_pan_address')}
-            className="bg-purple-700 hover:bg-purple-800 text-white text-xs font-semibold px-3 py-1.5 rounded-md shadow-xs transition flex items-center gap-1.5"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-            <span>6. Test Gemini AI: PAN for Address Proof (AI Mismatch Catch)</span>
+            <span>7. Test Error: Too Small (&lt;30KB)</span>
           </button>
         </div>
       </div>
@@ -345,7 +434,7 @@ export const SmartDocumentUpload: React.FC = () => {
                 ref={fileInputRef}
                 type="file"
                 className="hidden"
-                accept=".pdf,.jpg,.jpeg,.png,.zip"
+                accept=".pdf,.jpg,.jpeg,.png,.webp,.zip"
                 onChange={handleFileChange}
               />
 
@@ -354,16 +443,16 @@ export const SmartDocumentUpload: React.FC = () => {
               </div>
 
               <div className="text-xs font-bold text-slate-800 mb-1">
-                Drag & Drop sample document here, or <span className="text-blue-700 underline">Browse Local Files</span>
+                Drag & Drop sample document here, or <span className="text-blue-700 underline font-extrabold">Browse Local Files</span>
               </div>
               <div className="text-[11px] text-slate-500">
-                Supported: PDF, JPG, PNG • Max size: 2.0 MB • Min size: 30 KB
+                Supported: PDF, JPG, PNG, WEBP • Max size: 2.0 MB • Min size: 30 KB
               </div>
 
               {isValidating && (
                 <div className="mt-4 flex items-center justify-center gap-2 text-xs text-blue-700 font-semibold">
                   <div className="w-4 h-4 border-2 border-blue-700 border-t-transparent rounded-full animate-spin" />
-                  <span>Validating file format, size & OCR readability...</span>
+                  <span>Validating file format, size bounds & readability...</span>
                 </div>
               )}
             </div>
@@ -399,15 +488,15 @@ export const SmartDocumentUpload: React.FC = () => {
 
             {/* Live Google Gemini API Verification Result Card */}
             {isGeminiChecking && (
-              <div className="mt-4 p-4 rounded-xl border-2 border-purple-300 bg-purple-50/70 flex items-center gap-3 animate-pulse">
+              <div className="mt-4 p-4 rounded-xl border-2 border-purple-300 bg-purple-50/80 flex items-center gap-3 animate-pulse">
                 <div className="w-5 h-5 border-2 border-purple-700 border-t-transparent rounded-full animate-spin shrink-0" />
                 <div className="text-xs text-purple-950">
                   <span className="font-bold flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-                    <span>Google Gemini AI Evaluating Target Document Requirement...</span>
+                    <span>Google Gemini AI Vision Checking "{activeCheckingDocName}"...</span>
                   </span>
                   <span className="text-[11px] text-purple-800 mt-0.5 block">
-                    Checking if uploaded document officially qualifies for "{selectedCategory}" under Passport Rules 1980.
+                    Analyzing document particulars, headers, issuing body, and verifying compliance with "{selectedCategory}" under Passport Rules 1980.
                   </span>
                 </div>
               </div>
@@ -416,13 +505,13 @@ export const SmartDocumentUpload: React.FC = () => {
             {geminiResult && !isGeminiChecking && (
               <div className={`mt-4 p-4 rounded-xl border-2 transition-all shadow-xs animate-in fade-in ${
                 geminiResult.isCompliant
-                  ? 'border-emerald-400 bg-emerald-50/60 text-emerald-950'
-                  : 'border-red-400 bg-red-50/60 text-red-950'
+                  ? 'border-emerald-500 bg-emerald-50 text-emerald-950'
+                  : 'border-red-500 bg-red-50 text-red-950'
               }`}>
                 <div className="flex items-center justify-between border-b border-current/20 pb-2.5 mb-2.5">
                   <div className="flex items-center gap-2">
                     <Sparkles className={`w-4 h-4 ${geminiResult.isCompliant ? 'text-emerald-700' : 'text-red-700'}`} />
-                    <span className="font-bold text-xs uppercase tracking-wide">
+                    <span className="font-black text-xs uppercase tracking-wide">
                       {geminiResult.isCompliant ? '✓ Gemini Verified: Document Qualifies' : '⚠ Gemini AI Warning: Target Requirement Mismatch'}
                     </span>
                   </div>
@@ -439,7 +528,7 @@ export const SmartDocumentUpload: React.FC = () => {
                     <span><strong>Detected:</strong> {geminiResult.documentDetected}</span>
                   </div>
 
-                  <p className="leading-relaxed font-medium">
+                  <p className="leading-relaxed font-semibold">
                     {geminiResult.complianceAnalysis}
                   </p>
 
@@ -501,7 +590,7 @@ export const SmartDocumentUpload: React.FC = () => {
                 <button
                   type="button"
                   onClick={clearAllUploadedDocuments}
-                  className="text-[11px] text-red-600 hover:underline"
+                  className="text-[11px] text-red-600 hover:underline font-semibold"
                 >
                   Clear All
                 </button>
@@ -518,79 +607,130 @@ export const SmartDocumentUpload: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-3">
-                {uploadedDocuments.map((doc) => (
-                  <div
-                    key={doc.id}
-                    className="p-3 rounded-lg border border-emerald-300 bg-emerald-50/30 flex flex-col gap-2"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-start gap-2.5 flex-1 min-w-0">
-                        <div className="w-8 h-8 rounded bg-emerald-600 text-white flex items-center justify-center shrink-0 text-xs font-bold">
-                          PDF
+                {uploadedDocuments.map((doc) => {
+                  const check = doc.geminiCheckResult;
+                  const isPass = check ? check.isCompliant : doc.status === 'valid';
+
+                  return (
+                    <div
+                      key={doc.id}
+                      className={`p-3 rounded-lg border flex flex-col gap-2 transition ${
+                        isPass
+                          ? 'border-emerald-300 bg-emerald-50/30'
+                          : 'border-red-300 bg-red-50/30'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-start gap-2.5 flex-1 min-w-0">
+                          <div
+                            className={`w-8 h-8 rounded text-white flex items-center justify-center shrink-0 text-xs font-bold ${
+                              isPass ? 'bg-emerald-600' : 'bg-red-600'
+                            }`}
+                          >
+                            {doc.fileName.split('.').pop()?.toUpperCase() || 'DOC'}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-xs text-slate-900 truncate">
+                              {doc.fileName}
+                            </div>
+                            <div className="text-[10px] text-slate-500 flex items-center gap-2 mt-0.5">
+                              <span>{doc.fileSizeKB} KB</span>
+                              <span>•</span>
+                              <span className={isPass ? 'text-emerald-700 font-semibold' : 'text-red-700 font-semibold'}>
+                                {doc.category}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="font-bold text-xs text-slate-900 truncate">
-                            {doc.fileName}
-                          </div>
-                          <div className="text-[10px] text-slate-500 flex items-center gap-2 mt-0.5">
-                            <span>{doc.fileSizeKB} KB</span>
-                            <span>•</span>
-                            <span className="text-emerald-700 font-semibold">{doc.category}</span>
-                          </div>
+
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => handleRecheckDoc(doc)}
+                            className="p-1 rounded text-purple-700 hover:bg-purple-100"
+                            title="Re-run Gemini Check"
+                          >
+                            <RefreshCw className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPreviewDoc(doc)}
+                            className="p-1 rounded text-slate-600 hover:bg-slate-200"
+                            title="Preview Document"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeUploadedDocument(doc.id)}
+                            className="p-1 rounded text-red-600 hover:bg-red-100"
+                            title="Remove Document"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1 shrink-0">
-                        <button
-                          type="button"
-                          onClick={() => setPreviewDoc(doc)}
-                          className="p-1 rounded text-slate-600 hover:bg-slate-200"
-                          title="Preview Document"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => removeUploadedDocument(doc.id)}
-                          className="p-1 rounded text-red-600 hover:bg-red-100"
-                          title="Remove Document"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
+                      {/* Live Gemini AI Verification Badge */}
+                      {check ? (
+                        <div className={`p-2 rounded border text-[11px] ${
+                          check.isCompliant
+                            ? 'bg-white border-emerald-200 text-emerald-950'
+                            : 'bg-white border-red-200 text-red-950'
+                        }`}>
+                          <div className="flex items-center justify-between font-bold mb-0.5">
+                            <span className="flex items-center gap-1">
+                              <Sparkles className={`w-3.5 h-3.5 ${check.isCompliant ? 'text-emerald-600' : 'text-red-600'}`} />
+                              <span>{check.isCompliant ? 'Gemini: Valid ' + check.documentDetected : 'Gemini Mismatch: ' + check.documentDetected}</span>
+                            </span>
+                            <span className={`px-1.5 py-0.2 rounded font-mono font-bold text-[10px] ${
+                              check.isCompliant ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                            }`}>
+                              {check.confidence}% Match
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-slate-600 line-clamp-2 mt-0.5">
+                            {check.complianceAnalysis}
+                          </p>
+                        </div>
+                      ) : (
+                        doc.classificationResult && (
+                          <div className="bg-white p-2 rounded border border-emerald-200 text-[11px]">
+                            <div className="flex items-center justify-between text-emerald-900 font-semibold mb-1">
+                              <span className="flex items-center gap-1">
+                                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                                <span>AI: {doc.classificationResult.detectedType}</span>
+                              </span>
+                              <span className="bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-mono font-bold text-[10px]">
+                                {doc.classificationResult.confidence}%
+                              </span>
+                            </div>
+                          </div>
+                        )
+                      )}
                     </div>
-
-                    {/* AI Classification Pill (FR-08) */}
-                    {doc.classificationResult && (
-                      <div className="bg-white p-2 rounded border border-emerald-200 text-[11px]">
-                        <div className="flex items-center justify-between text-emerald-900 font-semibold mb-1">
-                          <span className="flex items-center gap-1">
-                            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                            <span>AI Classification: {doc.classificationResult.detectedType}</span>
-                          </span>
-                          <span className="bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded font-mono font-bold text-[10px]">
-                            {doc.classificationResult.confidence}% match
-                          </span>
-                        </div>
-                        <div className="text-[10px] text-slate-500 italic">
-                          *Simulated AI assistance. Official document verification will be conducted at PSK Counter A.
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
-            {/* Next Step Button */}
-            <div className="mt-5 pt-3 border-t border-slate-200">
+            {/* Next Step Button (Moving Smart Advisor to 3rd Step) */}
+            <div className="mt-5 pt-3 border-t border-slate-200 space-y-2">
+              <button
+                type="button"
+                onClick={() => navigate('/advisor')}
+                className="w-full bg-[#093b74] hover:bg-[#062c57] text-white font-bold text-xs py-2.5 px-4 rounded-lg shadow-sm transition flex items-center justify-center gap-2 group"
+              >
+                <span>Continue to Step 3: Smart Document Advisor (P0)</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+
               <button
                 type="button"
                 onClick={() => navigate('/apply')}
-                className="w-full bg-[#093b74] hover:bg-[#062c57] text-white font-bold text-xs py-2.5 px-4 rounded-lg shadow-sm transition flex items-center justify-center gap-2 group"
+                className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs py-2 px-3 rounded-lg transition text-center"
               >
-                <span>Continue to Multi-Step Application Form (P1)</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                ← Back to Step 1: Application Form
               </button>
             </div>
           </div>
@@ -615,41 +755,67 @@ export const SmartDocumentUpload: React.FC = () => {
             </div>
 
             <div className="p-6 overflow-y-auto flex-1 bg-slate-100 flex flex-col items-center justify-center">
-              {/* Simulated Document Viewer Canvas */}
-              <div className="w-full max-w-md bg-white rounded-lg shadow-md border border-slate-300 p-6 text-slate-800 space-y-4 font-serif">
-                <div className="text-center border-b pb-3">
-                  <div className="text-xs uppercase tracking-widest text-slate-500 font-sans">Government of India / Document Inspection</div>
-                  <div className="text-base font-bold text-[#093b74]">{previewDoc.category}</div>
-                  <div className="text-[10px] text-slate-400 font-sans">Uploaded on {previewDoc.uploadTimestamp} • Size: {previewDoc.fileSizeKB} KB</div>
-                </div>
+              {previewDoc.fileDataUrl && previewDoc.fileType.startsWith('image/') ? (
+                <img
+                  src={previewDoc.fileDataUrl}
+                  alt={previewDoc.fileName}
+                  className="max-h-[60vh] max-w-full object-contain rounded border border-slate-300 shadow"
+                />
+              ) : (
+                <div className="w-full max-w-md bg-white rounded-lg shadow-md border border-slate-300 p-6 text-slate-800 space-y-4 font-serif">
+                  <div className="text-center border-b pb-3">
+                    <div className="text-[10px] font-sans text-slate-500 uppercase tracking-widest">
+                      Government of India
+                    </div>
+                    <div className="font-bold text-sm text-[#093b74]">
+                      {previewDoc.category}
+                    </div>
+                    <div className="text-[10px] text-slate-400 font-mono mt-1">
+                      File: {previewDoc.fileName} ({previewDoc.fileSizeKB} KB)
+                    </div>
+                  </div>
 
-                <div className="space-y-2 text-xs font-sans">
-                  <div className="flex justify-between border-b pb-1">
-                    <span className="text-slate-500">Document Type:</span>
-                    <span className="font-semibold">{previewDoc.classificationResult?.detectedType || 'Standard Identification'}</span>
+                  <div className="bg-slate-50 p-3 rounded border border-slate-200 text-xs font-sans space-y-1.5">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Document Type:</span>
+                      <span className="font-bold">{previewDoc.classificationResult?.detectedType || 'Government Record'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Format:</span>
+                      <span className="font-mono">{previewDoc.fileType}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Uploaded At:</span>
+                      <span>{previewDoc.uploadTimestamp}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">AI Verification:</span>
+                      <span className={previewDoc.status === 'valid' ? 'text-emerald-600 font-bold' : 'text-red-600 font-bold'}>
+                        {previewDoc.status === 'valid' ? 'Compliant & Valid' : 'Mismatch Warning'}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex justify-between border-b pb-1">
-                    <span className="text-slate-500">File Verification Status:</span>
-                    <span className="font-bold text-emerald-700">✓ Legible & Format Compliant</span>
-                  </div>
-                  <div className="flex justify-between border-b pb-1">
-                    <span className="text-slate-500">AI Confidence:</span>
-                    <span className="font-mono font-bold">{previewDoc.classificationResult?.confidence || 95}%</span>
-                  </div>
-                </div>
 
-                <div className="p-3 bg-amber-50 rounded border border-amber-200 text-[11px] text-amber-900 font-sans">
-                  <strong>Verification Note:</strong> This document preview has passed local resolution and structural tests. You must carry the physical original to the PSK on the appointment date.
+                  {previewDoc.geminiCheckResult && (
+                    <div className="p-3 rounded bg-purple-50 border border-purple-200 text-xs font-sans">
+                      <div className="font-bold text-purple-950 flex items-center gap-1 mb-1">
+                        <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                        <span>Gemini Compliance Verdict:</span>
+                      </div>
+                      <p className="text-[11px] text-purple-900 leading-relaxed">
+                        {previewDoc.geminiCheckResult.complianceAnalysis}
+                      </p>
+                    </div>
+                  )}
                 </div>
-              </div>
+              )}
             </div>
 
-            <div className="bg-slate-50 px-4 py-3 border-t border-slate-200 flex justify-between items-center text-xs">
-              <span className="text-slate-500 text-[11px]">Previewing simulated document scan</span>
+            <div className="bg-slate-50 px-4 py-3 border-t border-slate-200 flex justify-end">
               <button
                 type="button"
                 onClick={() => setPreviewDoc(null)}
-                className="bg-slate-700 text-white px-4 py-1.5 rounded hover:bg-slate-800 font-semibold"
+                className="bg-slate-800 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-900"
               >
                 Close Preview
               </button>

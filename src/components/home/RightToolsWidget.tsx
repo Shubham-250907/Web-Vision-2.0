@@ -12,7 +12,7 @@ export const RightToolsWidget: React.FC = () => {
       <div className="bg-gradient-to-br from-[#093b74] to-[#05264c] text-white rounded-lg p-4 shadow-sm border-2 border-amber-400 relative overflow-hidden">
         <div className="absolute top-2 right-2">
           <span className="bg-amber-400 text-slate-950 font-black text-[9px] uppercase px-1.5 py-0.5 rounded shadow">
-            Enhanced P0
+            Step 3 P0
           </span>
         </div>
 
