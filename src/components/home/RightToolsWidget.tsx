@@ -41,6 +41,31 @@ export const RightToolsWidget: React.FC = () => {
         </Link>
       </div>
 
+      {/* 2. Reissue AI Comparator Widget */}
+      <div className="bg-purple-900 text-white rounded-lg p-3.5 shadow-xs border border-purple-400 relative overflow-hidden">
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-1.5">
+            <Sparkles className="w-4 h-4 text-amber-300" />
+            <h4 className="font-bold text-xs text-white">
+              Reissue AI Comparison
+            </h4>
+          </div>
+          <span className="bg-purple-800 text-[9px] font-mono font-bold px-1.5 py-0.2 rounded text-purple-200">
+            Gemini AI
+          </span>
+        </div>
+        <p className="text-[11px] text-purple-200 mb-2">
+          Compare old passport photo & details with new draft to prevent PSK officer objections.
+        </p>
+        <Link
+          to="/reissue-check"
+          className="text-xs text-amber-300 font-bold hover:underline flex items-center gap-1"
+        >
+          <span>Compare Old vs New Draft</span>
+          <ChevronRight className="w-3.5 h-3.5" />
+        </Link>
+      </div>
+
       {/* 2. Fee Calculator Link Tile */}
       <div className="bg-white rounded-lg p-3.5 shadow-xs border border-slate-200 hover:border-blue-400 transition">
         <div className="flex items-center justify-between mb-1.5">

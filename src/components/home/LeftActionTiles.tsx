@@ -139,6 +139,32 @@ export const LeftActionTiles: React.FC = () => {
         </div>
       </div>
 
+      {/* 5. Authentic "Before You Apply" Information Box */}
+      <div className="bg-[#f8fafc] rounded-lg p-3.5 border border-slate-300 text-xs shadow-2xs">
+        <div className="font-bold text-[#003366] text-xs uppercase tracking-wide border-b border-slate-200 pb-1.5 mb-2 flex items-center gap-1.5">
+          <ShieldCheck className="w-4 h-4 text-emerald-700" />
+          <span>Before You Apply Guidelines</span>
+        </div>
+        <ul className="space-y-1.5 text-[11px] text-slate-700">
+          <li className="flex items-start gap-1">
+            <span className="text-[#003366] font-bold">•</span>
+            <span>Check your document readiness using the <strong>Smart Advisor</strong>.</span>
+          </li>
+          <li className="flex items-start gap-1">
+            <span className="text-[#003366] font-bold">•</span>
+            <span>For Reissue, test discrepancies with <strong>Gemini AI</strong>.</span>
+          </li>
+          <li className="flex items-start gap-1">
+            <span className="text-[#003366] font-bold">•</span>
+            <span>Carry original documents to PSK on appointment day.</span>
+          </li>
+          <li className="flex items-start gap-1">
+            <span className="text-[#003366] font-bold">•</span>
+            <span>No fee is charged for user registration.</span>
+          </li>
+        </ul>
+      </div>
+
       {/* Simulated Login Modal */}
       {showLoginModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">

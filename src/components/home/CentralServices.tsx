@@ -138,21 +138,23 @@ export const CentralServices: React.FC = () => {
 
           {/* Reissue of Passport */}
           <Link
-            to="/advisor"
-            className="p-3.5 rounded-lg border border-slate-200 bg-slate-50/60 hover:bg-blue-50/40 hover:border-blue-400 transition group flex items-start gap-3"
+            to="/reissue-check"
+            className="p-3.5 rounded-lg border-2 border-purple-200 bg-purple-50/40 hover:bg-purple-50 hover:border-purple-500 transition group flex items-start gap-3"
           >
-            <div className="w-9 h-9 rounded bg-[#093b74] text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 rounded bg-purple-800 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
               <Clock className="w-5 h-5" />
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <h4 className="font-bold text-xs text-slate-900 group-hover:text-blue-800">
+                <h4 className="font-bold text-xs text-purple-950 group-hover:text-purple-800">
                   Reissue of Passport
                 </h4>
-                <span className="text-[10px] text-slate-500 font-medium">Validity / Pages / Damage</span>
+                <span className="bg-purple-100 text-purple-800 text-[10px] font-bold px-1.5 py-0.2 rounded border border-purple-300">
+                  Gemini AI Comparison
+                </span>
               </div>
               <p className="text-[11px] text-slate-600 mt-1 leading-snug">
-                For renewal upon expiry, exhaustion of pages, lost passport, or change of address.
+                Compare old passport photo & details with new draft to detect officer objections before PSK visit.
               </p>
             </div>
           </Link>

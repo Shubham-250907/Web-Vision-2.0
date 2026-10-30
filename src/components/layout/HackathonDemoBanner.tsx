@@ -89,6 +89,14 @@ export const HackathonDemoBanner: React.FC = () => {
               </button>
 
               <button
+                onClick={() => navigate('/reissue-check')}
+                className="bg-purple-900/90 hover:bg-purple-800 px-2.5 py-1 rounded border border-purple-400 text-[11px] font-medium flex items-center gap-1 transition"
+              >
+                <Sparkles className="w-3 h-3 text-yellow-300" />
+                <span>Reissue AI Check (Gemini)</span>
+              </button>
+
+              <button
                 onClick={() => navigate('/apply')}
                 className="bg-amber-800/90 hover:bg-amber-700 px-2.5 py-1 rounded border border-amber-400 text-[11px] font-medium flex items-center gap-1 transition"
               >

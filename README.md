@@ -41,7 +41,13 @@ According to official Ministry of External Affairs (MEA) data presented in the L
 - **AI Mismatch Detection:** Automatically detects mismatches (e.g., uploading a PAN card for Proof of Address, warning that PAN lacks residential address before PSK rejection).
 - **1-Click Auto-Compressor:** Automatically compresses oversized documents to comply with the 2 MB limit.
 
-### 3. Resilient Multi-Step Form with Auto-Save (Priority: P1)
+### 3. Reissue of Passport: Gemini AI Discrepancy & Photo Comparison (Special Feature)
+- **Old Passport vs. New Draft Comparison:** Compares previous booklet data (photo, name, address, ECR status) against the live application draft.
+- **Photo & Appearance Progression:** Evaluates age progression (e.g. minor to adult), beard, spectacles, or turban changes under ICAO 9303 biometric standard.
+- **Counter Objections Breakdown:** Predicts what specific objections **Counter A** (Biometrics/Data), **Counter B** (Verification Officer), and **Counter C** (Granting Officer) will raise.
+- **Legal Remedies:** Explicitly provides the required affidavits (Marriage Certificate, Deed Poll, Gazette notification, Annexure E) to prevent application file holds.
+
+### 4. Resilient Multi-Step Form with Auto-Save (Priority: P1)
 - **6-Section Form:** Service Required, Applicant Particulars, Family Details, Address, Emergency Contact, and Self Declaration.
 - **Real-Time Field Validation:** Immediate flags for missing fields, phone numbers (10 digits), PIN code (6 digits), and date of birth sanity.
 - **Contextual Guidance:** Inline tooltips clarifying tricky fields such as ECR vs. Non-ECR rules and Given Name vs. Surname rules.

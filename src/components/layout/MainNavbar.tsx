@@ -17,7 +17,12 @@ export const MainNavbar: React.FC = () => {
     {
       to: '/upload',
       label: language === 'hi' ? 'दस्तावेज़ अपलोड' : 'Smart Upload & Check',
-      badge: 'Smart P0'
+      badge: 'Gemini AI'
+    },
+    {
+      to: '/reissue-check',
+      label: language === 'hi' ? 'पुनर्निर्गम तुलना' : 'Reissue AI Check',
+      badge: 'Gemini AI'
     },
     {
       to: '/apply',
