@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ArrowRight, Shield, Clock, FileCheck, CheckCircle2, ChevronRight, ChevronLeft, Award, Globe, Users } from 'lucide-react';
+import { Sparkles, ArrowRight, Shield, Clock, FileCheck, CheckCircle2, ChevronRight, ChevronLeft, Award, Globe, Users, Compass, Bell } from 'lucide-react';
 import { useAccessibility } from '../../context/AccessibilityContext';
 
 export const CentralServices: React.FC = () => {
@@ -9,31 +9,31 @@ export const CentralServices: React.FC = () => {
 
   const heroSlides = [
     {
+      title: 'Visa Assist: Eligibility & Pre-Submission AI Screening',
+      subtitle: 'Zero Rejections at VFS • Germany Blocked Account (€11,904) & APS Checks • Unified Timeline',
+      badge: 'Consular Innovation P0',
+      ctaText: 'Launch Visa Assist (Student → Germany)',
+      ctaLink: '/visa-assist',
+      bgGradient: 'from-[#4a1038] via-[#63184b] to-[#802263]',
+      highlight: 'Directly detects mismatches between travel plans and uploaded visa documents'
+    },
+    {
       title: 'Enhanced Smart Passport Application Experience',
       subtitle: 'Zero Confusion • Real-Time Document Validation • Automatic Local Draft Recovery',
       badge: 'Hackathon Innovation',
       ctaText: 'Start Smart Fresh Passport Journey',
-      ctaLink: '/advisor',
+      ctaLink: '/apply',
       bgGradient: 'from-[#093b74] via-[#0b488f] to-[#1259ad]',
       highlight: 'Personalized checklists eliminate avoidable visits to PSK'
     },
     {
-      title: 'Rollout of Next-Generation Biometric e-Passports',
-      subtitle: 'Embedded electronic chip conforming to ICAO 9303 international standards',
-      badge: 'Govt of India Initiative',
-      ctaText: 'Check e-Passport Guidelines',
-      ctaLink: '/faq',
+      title: 'International Visa Rule & Requirement Alerts',
+      subtitle: 'Stay updated on changing consular policies across Schengen, UK, US, Canada and Germany',
+      badge: 'Consular Advisory',
+      ctaText: 'View Latest Visa Alerts',
+      ctaLink: '/visa-alerts',
       bgGradient: 'from-[#043322] via-[#094c35] to-[#126b4d]',
-      highlight: 'Advanced facial & fingerprint biometric security at international border gates'
-    },
-    {
-      title: 'Transparent Appointment Scheduling & Rescheduling',
-      subtitle: 'Real-time PSK slot availability with one-click slot management',
-      badge: 'Public Grievance Redressal',
-      ctaText: 'View Available PSK Slots',
-      ctaLink: '/appointment',
-      bgGradient: 'from-[#542104] via-[#753008] to-[#9c430e]',
-      highlight: 'Directly addressing 5,304 recorded appointment delay grievances'
+      highlight: 'Prevents submission of outdated financial limits and invalid medical policies'
     }
   ];
 
@@ -90,33 +90,79 @@ export const CentralServices: React.FC = () => {
           </Link>
 
           <Link
-            to="/track"
+            to="/visa-alerts"
             className="bg-white/15 hover:bg-white/25 text-white border border-white/30 text-xs font-semibold px-4 py-2.5 rounded-md transition"
           >
-            Track Existing Application
+            Check Visa Rule Alerts
           </Link>
         </div>
       </div>
 
-      {/* Services Grid (Authentic Passport Seva Categories) */}
+      {/* Services Grid (Authentic Passport Seva Categories + Visa Assist) */}
       <div className="bg-white rounded-xl shadow-xs border border-slate-200 p-4">
         <div className="flex items-center justify-between border-b border-slate-200 pb-2.5 mb-3.5">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 bg-[#093b74] rounded-xs"></span>
             <h3 className="font-bold text-sm text-slate-800 uppercase tracking-wide font-serif">
-              {language === 'hi' ? 'पासपोर्ट सेवाएँ' : 'Passport Services Available Online'}
+              {language === 'hi' ? 'पासपोर्ट एवं वीज़ा सेवाएँ' : 'Passport & Visa Services Available Online'}
             </h3>
           </div>
           <span className="text-[11px] text-slate-500 font-medium">
-            Click any service to view eligibility & requirements
+            Select a service to check eligibility & guidelines
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {/* Fresh Passport */}
+          {/* 1. Visa Assist: Eligibility & Mismatch AI */}
+          <Link
+            to="/visa-assist"
+            className="p-3.5 rounded-lg border-2 border-purple-300 bg-purple-50/50 hover:bg-purple-50 hover:border-purple-600 transition group flex items-start gap-3"
+          >
+            <div className="w-9 h-9 rounded bg-purple-900 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <Compass className="w-5 h-5 text-amber-300" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <h4 className="font-bold text-xs text-purple-950 group-hover:text-purple-800">
+                  Visa Assist & Eligibility Checker
+                </h4>
+                <span className="bg-purple-200 text-purple-900 text-[10px] font-bold px-1.5 py-0.2 rounded border border-purple-300">
+                  Consular P0
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-600 mt-1 leading-snug">
+                Personalized checklists & Gemini AI screening for Germany Student, Tourist, and Business Visas.
+              </p>
+            </div>
+          </Link>
+
+          {/* 2. Visa Rule & Requirement Alerts */}
+          <Link
+            to="/visa-alerts"
+            className="p-3.5 rounded-lg border-2 border-amber-300 bg-amber-50/50 hover:bg-amber-50 hover:border-amber-500 transition group flex items-start gap-3"
+          >
+            <div className="w-9 h-9 rounded bg-amber-600 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+              <Bell className="w-5 h-5" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <h4 className="font-bold text-xs text-amber-950 group-hover:text-amber-800">
+                  Visa Rule & Requirement Change Alerts
+                </h4>
+                <span className="bg-amber-200 text-amber-900 text-[10px] font-bold px-1.5 py-0.2 rounded">
+                  Active Alerts
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-600 mt-1 leading-snug">
+                Stay updated on statutory fund revisions (Germany Sperrkonto €11,904, APS certificate, Schengen EES).
+              </p>
+            </div>
+          </Link>
+
+          {/* 3. Fresh Passport */}
           <Link
             to="/apply"
-            className="p-3.5 rounded-lg border-2 border-blue-200 bg-blue-50/50 hover:bg-blue-50 hover:border-blue-500 transition group flex items-start gap-3"
+            className="p-3.5 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-slate-50 transition group flex items-start gap-3"
           >
             <div className="w-9 h-9 rounded bg-blue-700 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
               <FileCheck className="w-5 h-5" />
@@ -126,31 +172,31 @@ export const CentralServices: React.FC = () => {
                 <h4 className="font-bold text-xs text-[#093b74] group-hover:text-blue-800">
                   Fresh Passport Application
                 </h4>
-                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-1.5 py-0.2 rounded border border-emerald-300">
-                  Step 1: Auto-Save Form
+                <span className="bg-blue-100 text-blue-800 text-[10px] font-bold px-1.5 py-0.2 rounded">
+                  Form No. 1
                 </span>
               </div>
               <p className="text-[11px] text-slate-600 mt-1 leading-snug">
-                Fill Form No. 1 with real-time field validation, Non-ECR guidance, and automatic draft save.
+                Fill application with real-time field validation, Non-ECR guidance, and automatic draft save.
               </p>
             </div>
           </Link>
 
-          {/* Reissue of Passport */}
+          {/* 4. Reissue of Passport */}
           <Link
             to="/reissue-check"
-            className="p-3.5 rounded-lg border-2 border-purple-200 bg-purple-50/40 hover:bg-purple-50 hover:border-purple-500 transition group flex items-start gap-3"
+            className="p-3.5 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-slate-50 transition group flex items-start gap-3"
           >
-            <div className="w-9 h-9 rounded bg-purple-800 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <div className="w-9 h-9 rounded bg-slate-800 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
               <Clock className="w-5 h-5" />
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between">
-                <h4 className="font-bold text-xs text-purple-950 group-hover:text-purple-800">
+                <h4 className="font-bold text-xs text-slate-900 group-hover:text-blue-800">
                   Reissue of Passport
                 </h4>
-                <span className="bg-purple-100 text-purple-800 text-[10px] font-bold px-1.5 py-0.2 rounded border border-purple-300">
-                  Gemini AI Comparison
+                <span className="bg-slate-100 text-slate-800 text-[10px] font-bold px-1.5 py-0.2 rounded">
+                  AI Comparison
                 </span>
               </div>
               <p className="text-[11px] text-slate-600 mt-1 leading-snug">

@@ -8,36 +8,58 @@ export const RightToolsWidget: React.FC = () => {
 
   return (
     <div className="space-y-3.5">
-      {/* 1. Enhanced Document Advisor Box */}
-      <div className="bg-gradient-to-br from-[#093b74] to-[#05264c] text-white rounded-lg p-4 shadow-sm border-2 border-amber-400 relative overflow-hidden">
+      {/* 1. Visa Assist Innovation Box */}
+      <div className="bg-gradient-to-br from-[#4a1038] to-[#2c0821] text-white rounded-lg p-4 shadow-sm border-2 border-amber-400 relative overflow-hidden">
         <div className="absolute top-2 right-2">
           <span className="bg-amber-400 text-slate-950 font-black text-[9px] uppercase px-1.5 py-0.5 rounded shadow">
-            Step 3 P0
+            Consular P0
           </span>
         </div>
 
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2 mb-1.5">
           <Compass className="w-5 h-5 text-amber-300" />
           <h4 className="font-bold text-sm text-white font-serif">
-            Smart Document Advisor
+            Visa Assist & Eligibility
           </h4>
         </div>
 
-        <p className="text-[11px] text-slate-200 mb-3 leading-snug">
-          Confused about which documents to carry? Get a customized checklist tailored to your age, reissue type, and circumstances.
+        <p className="text-[11px] text-purple-100 mb-2.5 leading-snug">
+          Confused about which visa category to apply for? Get custom checklists & Gemini AI discrepancy detection.
         </p>
 
         <div className="bg-white/10 rounded p-2 text-[10px] text-amber-200 mb-3 flex items-center gap-1.5 border border-white/10">
           <Sparkles className="w-3.5 h-3.5 shrink-0 text-amber-300" />
-          <span>Dynamic classification: Mandatory, Conditional & Non-ECR rules.</span>
+          <span>Includes Germany Student Sperrkonto €11,904 & APS checks!</span>
         </div>
 
         <Link
-          to="/advisor"
+          to="/visa-assist"
           className="w-full bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs py-2 px-3 rounded flex items-center justify-center gap-1.5 transition shadow"
         >
-          <span>Launch Document Advisor</span>
+          <span>Launch Visa Assist</span>
           <ChevronRight className="w-4 h-4" />
+        </Link>
+      </div>
+
+      {/* 2. Enhanced Document Advisor Box */}
+      <div className="bg-gradient-to-br from-[#093b74] to-[#05264c] text-white rounded-lg p-3.5 shadow-sm border border-slate-300 relative overflow-hidden">
+        <div className="flex items-center gap-2 mb-1.5">
+          <FileText className="w-4 h-4 text-amber-300" />
+          <h4 className="font-bold text-xs text-white font-serif">
+            Smart Document Advisor
+          </h4>
+        </div>
+
+        <p className="text-[11px] text-slate-200 mb-2 leading-snug">
+          Customized checklist for Indian passport based on age, reissue type & Non-ECR status.
+        </p>
+
+        <Link
+          to="/advisor"
+          className="text-xs text-amber-300 font-bold hover:underline flex items-center gap-1"
+        >
+          <span>Open Document Advisor</span>
+          <ChevronRight className="w-3.5 h-3.5" />
         </Link>
       </div>
 

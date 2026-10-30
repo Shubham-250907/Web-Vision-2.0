@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UserPlus, LogIn, Calendar, Search, ArrowRight, ShieldCheck, CheckCircle2, Lock, X, RefreshCw } from 'lucide-react';
+import { UserPlus, LogIn, Calendar, Search, ArrowRight, ShieldCheck, CheckCircle2, Lock, X, RefreshCw, Compass, FileText } from 'lucide-react';
 import { useAccessibility } from '../../context/AccessibilityContext';
 
 export const LeftActionTiles: React.FC = () => {
@@ -113,30 +113,88 @@ export const LeftActionTiles: React.FC = () => {
         </div>
       </div>
 
-      {/* 4. Track Application Status */}
-      <div className="bg-gradient-to-r from-[#b34700] to-[#e46a1b] text-white rounded-lg shadow-sm overflow-hidden border border-orange-400 group hover:shadow-md transition">
+      {/* 4. Visa Assist & Eligibility Checker (Replacing Visual Tracker) */}
+      <div className="bg-gradient-to-r from-[#591443] to-[#802263] text-white rounded-lg shadow-sm overflow-hidden border border-purple-400 group hover:shadow-md transition">
         <div className="p-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-              <Search className="w-5 h-5 text-white" />
+              <Compass className="w-5 h-5 text-white" />
             </div>
             <div>
-              <div className="text-[11px] uppercase tracking-wider text-orange-100 font-semibold">
-                {language === 'hi' ? 'आवेदन स्थिति' : 'Live Timeline P0'}
+              <div className="text-[11px] uppercase tracking-wider text-purple-200 font-semibold">
+                {language === 'hi' ? 'वीज़ा सहायता' : 'Consular Visa Assist'}
               </div>
               <div className="font-bold text-sm text-white">
-                {language === 'hi' ? 'आवेदन ट्रैक करें' : 'Track Application Status'}
+                {language === 'hi' ? 'वीज़ा पात्रता और नियम' : 'Visa Eligibility & Alerts'}
               </div>
             </div>
           </div>
           <Link
-            to="/track"
-            className="bg-white text-orange-900 font-bold text-xs px-3 py-1.5 rounded shadow hover:bg-orange-50 transition flex items-center gap-1"
+            to="/visa-assist"
+            className="bg-amber-400 text-slate-950 font-bold text-xs px-3 py-1.5 rounded shadow hover:bg-amber-300 transition flex items-center gap-1"
           >
-            <span>Track</span>
+            <span>Launch</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
+      </div>
+
+      {/* 5. Authentic "Quick Links" Sidebar matching passportindia.gov.in */}
+      <div className="bg-white rounded-lg p-3.5 border border-slate-300 text-xs shadow-2xs space-y-2">
+        <div className="font-bold text-[#003366] text-xs uppercase tracking-wide border-b border-slate-200 pb-1.5 flex items-center gap-1.5 font-serif">
+          <FileText className="w-4 h-4 text-blue-700" />
+          <span>Services & Information</span>
+        </div>
+        <ul className="space-y-1.5 text-[11px] text-slate-700">
+          <li>
+            <Link to="/visa-assist" className="hover:text-blue-800 hover:underline flex items-center gap-1.5">
+              <span className="text-amber-600 font-bold">★</span>
+              <strong>Visa Assist (Eligibility & Mismatch AI)</strong>
+            </Link>
+          </li>
+          <li>
+            <Link to="/visa-alerts" className="hover:text-blue-800 hover:underline flex items-center gap-1.5">
+              <span className="text-red-600 font-bold">●</span>
+              <span>Visa Rule & Statutory Change Alerts</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/advisor" className="hover:text-blue-800 hover:underline flex items-center gap-1.5">
+              <span className="text-blue-600">›</span>
+              <span>Smart Document Advisor</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/upload" className="hover:text-blue-800 hover:underline flex items-center gap-1.5">
+              <span className="text-blue-600">›</span>
+              <span>Smart Document Upload & Gemini Check</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/reissue-check" className="hover:text-blue-800 hover:underline flex items-center gap-1.5">
+              <span className="text-blue-600">›</span>
+              <span>Reissue AI Photo & Particulars Comparison</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/fee-calculator" className="hover:text-blue-800 hover:underline flex items-center gap-1.5">
+              <span className="text-blue-600">›</span>
+              <span>Fee Calculator</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/locate-centre" className="hover:text-blue-800 hover:underline flex items-center gap-1.5">
+              <span className="text-blue-600">›</span>
+              <span>Locate Passport Kendra (PSK / POPSK)</span>
+            </Link>
+          </li>
+          <li>
+            <Link to="/faq" className="hover:text-blue-800 hover:underline flex items-center gap-1.5">
+              <span className="text-blue-600">›</span>
+              <span>Frequently Asked Questions</span>
+            </Link>
+          </li>
+        </ul>
       </div>
 
       {/* 5. Authentic "Before You Apply" Information Box */}

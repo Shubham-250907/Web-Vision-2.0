@@ -26,9 +26,47 @@
   margin-left: auto;
   margin-right: auto;
   background-color: #ffffff;
-  box-shadow: 0 0 10px rgba(0, 35, 70, 0.12);
-  border-left: 1px solid #d0d9e2;
-  border-right: 1px solid #d0d9e2;
+  box-shadow: 0 0 12px rgba(0, 35, 70, 0.15);
+  border-left: 1px solid #b8c8d8;
+  border-right: 1px solid #b8c8d8;
+}
+
+/* Authentic Government Form & Table Elements */
+.gov-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.gov-table th {
+  background-color: #003366;
+  color: #ffffff;
+  font-weight: 700;
+  padding: 8px 10px;
+  text-align: left;
+  border: 1px solid #002244;
+}
+
+.gov-table td {
+  padding: 7px 10px;
+  border: 1px solid #d0d9e2;
+}
+
+.gov-table tr:nth-child(even) {
+  background-color: #f7f9fc;
+}
+
+.gov-section-header {
+  background: linear-gradient(90deg, #003366 0%, #004d99 100%);
+  color: #ffffff;
+  padding: 8px 14px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: bold;
+  font-size: 14px;
+  border-bottom: 2px solid #f2a900;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 /* Custom scrollbar */

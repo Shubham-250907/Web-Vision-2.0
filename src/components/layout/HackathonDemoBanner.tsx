@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, ChevronDown, ChevronUp, Play, CheckCircle2, RotateCcw, FileText, Upload, Compass, Search, Calendar, ShieldAlert, CreditCard } from 'lucide-react';
+import { Sparkles, ChevronDown, ChevronUp, Play, CheckCircle2, RotateCcw, FileText, Upload, Compass, Search, Calendar, ShieldAlert, CreditCard, Bell } from 'lucide-react';
 import { useApplication } from '../../context/ApplicationContext';
 
 export const HackathonDemoBanner: React.FC = () => {
@@ -70,14 +70,31 @@ export const HackathonDemoBanner: React.FC = () => {
               </p>
             </div>
 
-            {/* Quick Demo Jump Buttons - Step 3 is Smart Advisor */}
+            {/* Quick Demo Jump Buttons - Featuring Visa Assist & Core Prototype */}
             <div className="flex flex-wrap items-center gap-1.5">
+              <button
+                onClick={() => navigate('/visa-assist')}
+                className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-3 py-1 rounded shadow text-[11px] flex items-center gap-1.5 transition"
+                title="Launch Germany Student Visa Assist Demo Walkthrough"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-slate-950 fill-amber-300" />
+                <span>⭐ 1. Visa Assist (Student → Germany Demo)</span>
+              </button>
+
+              <button
+                onClick={() => navigate('/visa-alerts')}
+                className="bg-amber-800/90 hover:bg-amber-700 px-2.5 py-1 rounded border border-amber-400 text-[11px] font-medium flex items-center gap-1 transition"
+              >
+                <Bell className="w-3 h-3 text-yellow-300" />
+                <span>2. Visa Rule Alerts</span>
+              </button>
+
               <button
                 onClick={() => navigate('/apply')}
                 className="bg-amber-800/90 hover:bg-amber-700 px-2.5 py-1 rounded border border-amber-400 text-[11px] font-medium flex items-center gap-1 transition"
               >
                 <FileText className="w-3 h-3 text-yellow-300" />
-                <span>1. Form Auto-Save (P1)</span>
+                <span>3. Form Auto-Save (P1)</span>
               </button>
 
               <button
@@ -85,7 +102,7 @@ export const HackathonDemoBanner: React.FC = () => {
                 className="bg-amber-800/90 hover:bg-amber-700 px-2.5 py-1 rounded border border-amber-400 text-[11px] font-medium flex items-center gap-1 transition"
               >
                 <Upload className="w-3 h-3 text-yellow-300" />
-                <span>2. Upload Validation (P0)</span>
+                <span>4. Upload & Gemini Check (P0)</span>
               </button>
 
               <button
@@ -93,23 +110,7 @@ export const HackathonDemoBanner: React.FC = () => {
                 className="bg-amber-800/90 hover:bg-amber-700 px-2.5 py-1 rounded border border-amber-400 text-[11px] font-medium flex items-center gap-1 transition shadow-xs"
               >
                 <Compass className="w-3 h-3 text-yellow-300" />
-                <span>3. Smart Advisor (P0)</span>
-              </button>
-
-              <button
-                onClick={() => navigate('/payment')}
-                className="bg-amber-800/90 hover:bg-amber-700 px-2.5 py-1 rounded border border-amber-400 text-[11px] font-medium flex items-center gap-1 transition"
-              >
-                <CreditCard className="w-3.5 h-3.5 text-yellow-300" />
-                <span>4. Fee Payment Simulation (P1)</span>
-              </button>
-
-              <button
-                onClick={() => navigate('/track')}
-                className="bg-amber-800/90 hover:bg-amber-700 px-2.5 py-1 rounded border border-amber-400 text-[11px] font-medium flex items-center gap-1 transition"
-              >
-                <Search className="w-3 h-3 text-yellow-300" />
-                <span>5. Visual Tracker (P0)</span>
+                <span>5. Smart Document Advisor (P0)</span>
               </button>
 
               <button
@@ -117,7 +118,7 @@ export const HackathonDemoBanner: React.FC = () => {
                 className="bg-purple-900/90 hover:bg-purple-800 px-2.5 py-1 rounded border border-purple-400 text-[11px] font-medium flex items-center gap-1 transition"
               >
                 <Sparkles className="w-3 h-3 text-yellow-300" />
-                <span>Reissue AI Check (Gemini)</span>
+                <span>6. Reissue AI Check</span>
               </button>
 
               <button

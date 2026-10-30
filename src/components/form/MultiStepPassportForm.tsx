@@ -119,7 +119,7 @@ export const MultiStepPassportForm: React.FC = () => {
     }
   };
 
-  const handleFinalSubmit = (targetRoute: '/upload' | '/payment' = '/upload') => {
+  const handleFinalSubmit = (targetRoute: '/upload' | '/visa-assist' = '/upload') => {
     setIsSubmitting(true);
     setTimeout(() => {
       const generatedARN = submitApplication();
@@ -975,11 +975,11 @@ export const MultiStepPassportForm: React.FC = () => {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => handleFinalSubmit('/payment')}
+                  onClick={() => handleFinalSubmit('/visa-assist')}
                   disabled={isSubmitting}
-                  className="bg-slate-700 hover:bg-slate-800 text-white font-bold px-3 py-2 rounded-lg text-xs transition"
+                  className="bg-[#003366] hover:bg-[#002244] text-white font-bold px-3 py-2 rounded-lg text-xs transition"
                 >
-                  Proceed to Payment
+                  Proceed to Visa Assist
                 </button>
                 <button
                   type="button"
@@ -994,7 +994,7 @@ export const MultiStepPassportForm: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <span>Confirm & Proceed to Step 2: Document Upload</span>
+                      <span>Confirm & Proceed to Document Upload</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}

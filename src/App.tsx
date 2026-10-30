@@ -16,9 +16,9 @@ import { HomePage } from './pages/HomePage';
 import { DocumentAdvisorPage } from './pages/DocumentAdvisorPage';
 import { DocumentUploadPage } from './pages/DocumentUploadPage';
 import { ApplyPassportPage } from './pages/ApplyPassportPage';
-import { TrackApplicationPage } from './pages/TrackApplicationPage';
+import { VisaAssistPage } from './pages/VisaAssistPage';
+import { VisaAlertsPage } from './pages/VisaAlertsPage';
 import { AppointmentPage } from './pages/AppointmentPage';
-import { PaymentPage } from './pages/PaymentPage';
 import { FeeCalculatorPage } from './pages/FeeCalculatorPage';
 import { LocateCentrePage } from './pages/LocateCentrePage';
 import { FaqPage } from './pages/FaqPage';
@@ -56,9 +56,9 @@ export function App() {
                   <Route path="/upload" element={<DocumentUploadPage />} />
                   <Route path="/reissue-check" element={<ReissueCheckPage />} />
                   <Route path="/apply" element={<ApplyPassportPage />} />
-                  <Route path="/track" element={<TrackApplicationPage />} />
+                  <Route path="/visa-assist" element={<VisaAssistPage />} />
+                  <Route path="/visa-alerts" element={<VisaAlertsPage />} />
                   <Route path="/appointment" element={<AppointmentPage />} />
-                  <Route path="/payment" element={<PaymentPage />} />
                   <Route path="/fee-calculator" element={<FeeCalculatorPage />} />
                   <Route path="/locate-centre" element={<LocateCentrePage />} />
                   <Route path="/faq" element={<FaqPage />} />

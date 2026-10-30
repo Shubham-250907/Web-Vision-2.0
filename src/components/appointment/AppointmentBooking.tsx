@@ -242,10 +242,10 @@ export const AppointmentBooking: React.FC = () => {
 
                 <button
                   type="button"
-                  onClick={() => navigate('/track')}
-                  className="w-full bg-[#093b74] hover:bg-[#07305e] text-white font-bold text-xs py-2.5 px-3 rounded-lg transition flex items-center justify-center gap-1.5 shadow-sm"
+                  onClick={() => navigate('/visa-assist')}
+                  className="w-full bg-[#003366] hover:bg-[#002244] text-white font-bold text-xs py-2.5 px-3 rounded-lg transition flex items-center justify-center gap-1.5 shadow-sm"
                 >
-                  <span>Track Application Progress (Module 4)</span>
+                  <span>Explore Visa Assist & Travel Guidelines</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
