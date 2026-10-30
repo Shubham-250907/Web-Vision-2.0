@@ -45,18 +45,13 @@ export const GovFooter: React.FC = () => {
               </Link>
             </li>
             <li>
-              <Link to="/visa-assist" className="hover:text-amber-300 transition-colors flex items-center gap-1 font-semibold text-amber-200">
-                <span>★ Visa Assist: Eligibility & Mismatch AI</span>
+              <Link to="/track" className="hover:text-amber-300 transition-colors flex items-center gap-1">
+                <span>• Visual Tracking Timeline (P0)</span>
               </Link>
             </li>
             <li>
-              <Link to="/visa-alerts" className="hover:text-amber-300 transition-colors flex items-center gap-1">
-                <span>• Visa Rule & Requirement Alerts</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/reissue-check" className="hover:text-amber-300 transition-colors flex items-center gap-1">
-                <span>• Reissue AI Photo & Particulars Comparison</span>
+              <Link to="/payment" className="hover:text-amber-300 transition-colors flex items-center gap-1">
+                <span>• Fee Payment & Gateway Simulation (P1)</span>
               </Link>
             </li>
           </ul>

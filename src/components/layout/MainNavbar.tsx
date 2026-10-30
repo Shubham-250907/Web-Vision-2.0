@@ -10,16 +10,6 @@ export const MainNavbar: React.FC = () => {
   const navLinks = [
     { to: '/', label: language === 'hi' ? 'मुख्य पृष्ठ' : 'Home' },
     {
-      to: '/visa-assist',
-      label: language === 'hi' ? 'वीज़ा सहायता' : 'Visa Assist & Eligibility',
-      badge: 'Visa P0'
-    },
-    {
-      to: '/visa-alerts',
-      label: language === 'hi' ? 'वीज़ा नियम अलर्ट' : 'Visa Rule Alerts',
-      badge: 'Alerts'
-    },
-    {
       to: '/apply',
       label: language === 'hi' ? 'ऑनलाइन आवेदन' : 'Apply Online',
       badge: 'Auto-Save'
@@ -32,12 +22,22 @@ export const MainNavbar: React.FC = () => {
     {
       to: '/advisor',
       label: language === 'hi' ? 'दस्तावेज़ सलाहकार' : 'Document Advisor',
-      badge: 'Checklist'
+      badge: 'Smart P0'
     },
     {
       to: '/reissue-check',
       label: language === 'hi' ? 'पुनर्निर्गम तुलना' : 'Reissue AI Check',
       badge: 'Gemini AI'
+    },
+    {
+      to: '/payment',
+      label: language === 'hi' ? 'शुल्क भुगतान' : 'Fee Payment',
+      badge: 'Simulated P1'
+    },
+    {
+      to: '/track',
+      label: language === 'hi' ? 'आवेदन स्थिति' : 'Track Application',
+      badge: 'Timeline P0'
     },
     {
       to: '/appointment',

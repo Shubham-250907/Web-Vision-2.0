@@ -553,10 +553,10 @@ export const SmartDocumentAdvisor: React.FC = () => {
 
               <button
                 type="button"
-                onClick={() => navigate('/visa-assist')}
-                className="bg-[#003366] hover:bg-[#002244] text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2 group"
+                onClick={() => navigate('/payment')}
+                className="bg-[#093b74] hover:bg-[#07305e] text-white font-bold text-xs px-5 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2 group"
               >
-                <span>Proceed to Visa Assist & Consular Checker</span>
+                <span>Proceed to Step 4: Fee Payment Simulation (P1)</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>

@@ -20,13 +20,6 @@ export const MarqueeAlert: React.FC = () => {
               : 'Caution: Use only the official portal passportindia.gov.in for passport appointments and applications. No extra fee is charged for user registration.'}
           </span>
           <span className="mx-6 text-slate-400 font-bold">•</span>
-          <span className="text-purple-900 font-bold inline-flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5 text-purple-600 inline" />
-            <span>
-              New Visa Assist: Check destination visa eligibility, statutory checklists & Gemini AI discrepancy detection (e.g. Germany Student €11,904 Blocked Account).
-            </span>
-          </span>
-          <span className="mx-6 text-slate-400 font-bold">•</span>
           <span className="text-[#093b74] font-semibold inline-flex items-center gap-1">
             <Sparkles className="w-3.5 h-3.5 text-amber-600 inline" />
             <span>
